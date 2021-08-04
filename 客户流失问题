@@ -1,0 +1,47 @@
+## 一、案例背景
+
+### 运营商想要更好地保持客户数量稳定乃至增长，一方面需要发挥自己的优势吸引客户，另一方面也要注意控制流失客户的数量。为了避免不必要的推销及人力财力的浪费，运营商希望能通过用户各方面的通讯数据来确定哪些用户更容易流失。因此本案例的目标在于通过通讯数据判断用户是否流失，即用户分类问题。
+
+```{r}
+rm(list = ls())  # 清空工作空间
+library(ggplot2)
+# 读入数据
+dat1 = read.csv("JuneTrain.csv")
+dat2 = read.csv("JulyTest.csv")
+head(dat1) 
+# 重新命名数据以及排列
+dat1 = dat1[, c("tenure", "expense", "COUNT", "perperson", "entropy", "chgexpense", "chgcount", "churn")]
+colnames(dat1) = c("tenure", "expense", "count", "perperson", "entropy", "chgexpense", "chgcount", "churn")
+dat2 = dat2[, c("tenure", "expense", "COUNT", "perperson", "entropy", "chgexpense", "chgcount", "churn")]
+colnames(dat2) = c("tenure", "expense", "count", "perperson", "entropy", "chgexpense", "chgcount", "churn")
+
+library(pROC)
+# 生成ROC曲线
+```
+
+## 二、描述性统计
+
+### 绘制箱线图分析各类影响因素
+```{r}
+
+# tenure和是否流失
+p1 = ggplot(dat1, aes(x = as.factor(churn), y = tenure, fill = as.factor(churn)))  + geom_boxplot() +
+  guides(fill = FALSE) + theme_minimal() + xlab("是否流失") + ylab("在网时长") +
+  theme(axis.title.x = element_text(size = 16, face = "bold"),
+        axis.text.x = element_text(size = 12, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold")) +
+  scale_fill_hue(c = 45, l = 80)
+# expense和是否流失
+p2 = ggplot(dat1, aes(x = as.factor(churn), y = expense, fill = as.factor(churn)))  + geom_boxplot() +
+  guides(fill = FALSE) + theme_minimal() + xlab("是否流失") + ylab("当月话费") +
+  theme(axis.title.x = element_text(size = 16, face = "bold"),
+        axis.text.x = element_text(size =12, face = "bold"),
+        axis.title.y = element_text(size = 16, face = "bold"),
+        axis.text.y = element_text(size = 12, face = "bold")) +
+  scale_fill_hue(c = 45, l = 80)
+
+library(gridExtra)
+# 将2张图并列输出
+grid.arrange(p1,p2,ncol = 2)
+```
